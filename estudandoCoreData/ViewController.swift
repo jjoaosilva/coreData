@@ -29,29 +29,38 @@ class ViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         self.view = mainView
+        
 //        deleteAllData()
 //        for i in 0...10 {
 //            self.addNewMovie(with: "Filme \(i)", randomDate: "0\(i)/0\(i)/0\(i)")
 //        }
-
+//        self.loadData()
+        self.addBatch()
         self.loadData()
+//        loadDataAsync()
+    }
+    
+    func addBatch() {
+        let context = AppDelegate.viewContext
+       
+        let request = NSBatchInsertRequest(entity: Movie.entity(), objects: [["name": "ok1", "date": "valor tetse1"], ["name": "ok2", "date": "valor tetse2"]])
+        do {
+            try context.execute(request) as? NSBatchInsertResult
+            try context.save()
+        } catch let error as NSError {
+            print("Could not save. \(error), \(error.userInfo)")
+        }
     }
 
     func addNewMovie(with name: String, randomDate: String) {
         let context = AppDelegate.viewContext
 
         let entity = NSEntityDescription.entity(forEntityName: "Movie", in: context)!
-        let date = NSEntityDescription.entity(forEntityName: "Age", in: context)!
-    
-        entity.relationships(forDestination: date)
 
         let movie = NSManagedObject(entity: entity, insertInto: context)
-        let dateOb = NSManagedObject(entity: date, insertInto: context)
     
-        dateOb.setValue(randomDate, forKey: "date")
-
         movie.setValue(name, forKey: "name")
-        movie.setValue(dateOb, forKey: "date")
+        movie.setValue(randomDate, forKey: "date")
         do {
             try context.save()
         } catch let error as NSError {
@@ -91,10 +100,27 @@ class ViewController: UIViewController {
         }
     }
 
-    func loadData() {
+    func loadDataAsync() {
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Movie")
         fetchRequest.includesPendingChanges = false
 
+        let fetchRequestAsync = NSAsynchronousFetchRequest(fetchRequest: fetchRequest) { asynchronousFetchResult in
+            guard let result = asynchronousFetchResult.finalResult as? [Movie] else { return }
+            self.allData = result
+        }
+
+        let context = AppDelegate.viewContext
+        do{
+            try context.execute(fetchRequestAsync)
+        }catch{
+            fatalError("Error is retriving titles items")
+        }
+    }
+
+    func loadData() {
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Movie")
+        fetchRequest.includesPendingChanges = false
+        
         let context = AppDelegate.viewContext
         do{
             let results = try context.fetch(fetchRequest)
@@ -114,7 +140,7 @@ extension ViewController: UITableViewDelegate, UITableViewDataSource {
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell", for: indexPath) as! TableViewCell
         
-        cell.configure(title: self.allData[indexPath.row].name!, date: self.allData[indexPath.row].date!.date!)
+        cell.configure(title: self.allData[indexPath.row].name!, date: self.allData[indexPath.row].date!)
         return cell
     }
     

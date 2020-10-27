@@ -1,14 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="17192" systemVersion="19H2" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="Age" representedClassName="Age" syncable="YES" codeGenerationType="class">
-        <attribute name="date" optional="YES" attributeType="String"/>
-    </entity>
     <entity name="Movie" representedClassName="Movie" syncable="YES" codeGenerationType="class">
+        <attribute name="date" optional="YES" attributeType="String"/>
         <attribute name="name" optional="YES" attributeType="String"/>
-        <relationship name="date" optional="YES" maxCount="1" deletionRule="Nullify" destinationEntity="Age"/>
     </entity>
     <elements>
-        <element name="Age" positionX="-45" positionY="9" width="128" height="58"/>
-        <element name="Movie" positionX="-45" positionY="0" width="128" height="73"/>
+        <element name="Movie" positionX="-54" positionY="-9" width="128" height="73"/>
     </elements>
 </model>
